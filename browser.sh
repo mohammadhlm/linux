@@ -41,7 +41,7 @@ install_chromium() {
         echo "Chromium installed successfully."
         IP=$(hostname -I | awk '{print $1}')
         echo " "
-        echo "Use browser with http://$IP:6000"
+        echo "Use browser with http://$IP:2000"
     fi
 }
 
