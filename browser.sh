@@ -31,8 +31,8 @@ install_chromium() {
             -e CUSTOM_USER=$USERNAME \
             -e PASSWORD=$PASSWORD \
             -e CHROME_CLI=https://www.youtube.com/@IR_TECH/ `#optional` \
-            -p 4000:4000 \
-            -p 4001:4001 \
+            -p 5000:3000 \
+            -p 5001:3001 \
             -v /root/chromium/config:/config \
             --shm-size="1gb" \
             --restart unless-stopped \
@@ -41,7 +41,7 @@ install_chromium() {
         echo "Chromium installed successfully."
         IP=$(hostname -I | awk '{print $1}')
         echo " "
-        echo "Use browser with http://$IP:4000"
+        echo "Use browser with http://$IP:5000"
     fi
 }
 
@@ -62,12 +62,16 @@ uninstall_chromium() {
 echo "Select an option:"
 echo "1) Install Chromium"
 echo "2) Uninstall Chromium"
+echo "3) Install Firefox"
+echo "4) Uninstall Firefox"
 echo "5) Exit"
 read -p "Please choose : " choice
 
 case $choice in
     1) install_chromium ;;
     2) uninstall_chromium ;;
+    3) install_firefox ;;
+    4) uninstall_firefox ;;
     5) exit ;;
     *) echo "Invalid choice. Please select a valid option." ;;
 esac
