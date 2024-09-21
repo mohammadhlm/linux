@@ -31,8 +31,8 @@ install_chromium() {
             -e CUSTOM_USER=$USERNAME \
             -e PASSWORD=$PASSWORD \
             -e CHROME_CLI=https://www.youtube.com/@IR_TECH/ `#optional` \
-            -p 9000:9000 \
-            -p 9001:9001 \
+            -p 5000:5000 \
+            -p 5001:5001 \
             -v /root/chromium/config:/config \
             --shm-size="1gb" \
             --restart unless-stopped \
@@ -41,7 +41,7 @@ install_chromium() {
         echo "Chromium installed successfully."
         IP=$(hostname -I | awk '{print $1}')
         echo " "
-        echo "Use browser with http://$IP:9000"
+        echo "Use browser with http://$IP:5000"
     fi
 }
 
