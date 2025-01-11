@@ -21,6 +21,9 @@ install_chromium() {
         read -p "Enter username for Chromium : " USERNAME
         read -sp "Enter password for Chromium : " PASSWORD
         echo
+        read -p "Enter the first port (left side) for Chromium (e.g., 2000): " PORT1
+        read -p "Enter the second port (left side) for Chromium (e.g., 2001): " PORT2
+        
         echo "Installing Chromium..."
         docker run -d \
             --name=chromium \
@@ -31,17 +34,18 @@ install_chromium() {
             -e CUSTOM_USER=$USERNAME \
             -e PASSWORD=$PASSWORD \
             -e CHROME_CLI=https://www.youtube.com/@IR_TECH/ `#optional` \
-            -p 2000:3000 \
-            -p 2001:3001 \
+            -p $PORT1:3000 \
+            -p $PORT2:3001 \
             -v /root/chromium/config:/config \
             --shm-size="1gb" \
             --restart unless-stopped \
             lscr.io/linuxserver/chromium:latest
+        
         echo "------------------------------------------------------------------------------------------------"
         echo "Chromium installed successfully."
         IP=$(hostname -I | awk '{print $1}')
         echo " "
-        echo "Use browser with http://$IP:2000"
+        echo "Use browser with http://$IP:$PORT1"
     fi
 }
 
@@ -56,7 +60,6 @@ uninstall_chromium() {
         echo "Chromium is not installed."
     fi
 }
-
 
 # Display the menu
 echo "Select an option:"
