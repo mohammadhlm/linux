@@ -13,25 +13,25 @@ else
     echo "Docker is already installed."
 fi
 
-# Function to install multiple Chromium containers with custom SOCKS5 proxy
+# Function to install multiple Chromium containers
 install_multiple_chromium() {
     read -p "Enter username for Chromium : " USERNAME
     read -sp "Enter password for Chromium : " PASSWORD
     echo
 
+    # دریافت تعداد کانتینرها از کاربر
+    while true; do
+        read -p "Enter the number of containers to create: " CONTAINER_COUNT
+        if [[ $CONTAINER_COUNT =~ ^[0-9]+$ ]]; then
+            break
+        else
+            echo "Please enter a valid number."
+        fi
+    done
+
     # Starting port
     START_PORT=4000
     PORT_INCREMENT=1000
-    CONTAINER_COUNT=20
-
-    # Array to store proxies
-    declare -a PROXIES
-
-    # Collect proxies for each container
-    for ((i = 0; i < CONTAINER_COUNT; i++)); do
-        read -p "Enter SOCKS5 proxy for container $((i + 1)) (e.g., socks5://IP:PORT): " PROXY
-        PROXIES[$i]=$PROXY
-    done
 
     for ((i = 0; i < CONTAINER_COUNT; i++)); do
         CURRENT_PORT_LEFT1=$((START_PORT + i * PORT_INCREMENT))
@@ -39,12 +39,11 @@ install_multiple_chromium() {
         CURRENT_PORT_RIGHT1=3000
         CURRENT_PORT_RIGHT2=3001
         CONTAINER_NAME="chromium_$CURRENT_PORT_LEFT1"
-        CURRENT_PROXY=${PROXIES[$i]}
 
         if docker ps -a | grep -q $CONTAINER_NAME; then
             echo "Container $CONTAINER_NAME already exists. Skipping..."
         else
-            echo "Installing Chromium on ports $CURRENT_PORT_LEFT1:$CURRENT_PORT_RIGHT1 and $CURRENT_PORT_LEFT2:$CURRENT_PORT_RIGHT2 with SOCKS5 proxy $CURRENT_PROXY..."
+            echo "Installing Chromium on ports $CURRENT_PORT_LEFT1:$CURRENT_PORT_RIGHT1 and $CURRENT_PORT_LEFT2:$CURRENT_PORT_RIGHT2..."
             docker run -d \
                 --name=$CONTAINER_NAME \
                 --security-opt seccomp=unconfined `#optional` \
@@ -54,7 +53,6 @@ install_multiple_chromium() {
                 -e CUSTOM_USER=$USERNAME \
                 -e PASSWORD=$PASSWORD \
                 -e CHROME_CLI=https://www.youtube.com/@IR_TECH/ `#optional` \
-                -e ALL_PROXY=$CURRENT_PROXY \  # تنظیم پروکسی SOCKS5 برای هر کانتینر
                 -p $CURRENT_PORT_LEFT1:$CURRENT_PORT_RIGHT1 \
                 -p $CURRENT_PORT_LEFT2:$CURRENT_PORT_RIGHT2 \
                 -v /root/chromium/config_$CURRENT_PORT_LEFT1:/config \
@@ -62,7 +60,7 @@ install_multiple_chromium() {
                 --restart unless-stopped \
                 lscr.io/linuxserver/chromium:latest
 
-            echo "Chromium container $CONTAINER_NAME installed successfully on ports $CURRENT_PORT_LEFT1:$CURRENT_PORT_RIGHT1 and $CURRENT_PORT_LEFT2:$CURRENT_PORT_RIGHT2 with SOCKS5 proxy $CURRENT_PROXY."
+            echo "Chromium container $CONTAINER_NAME installed successfully on ports $CURRENT_PORT_LEFT1:$CURRENT_PORT_RIGHT1 and $CURRENT_PORT_LEFT2:$CURRENT_PORT_RIGHT2."
             IP=$(hostname -I | awk '{print $1}')
             echo "Use browser with http://$IP:$CURRENT_PORT_LEFT1"
             echo "------------------------------------------------------------------------------------------------"
@@ -72,7 +70,16 @@ install_multiple_chromium() {
 
 # Function to uninstall all Chromium containers
 uninstall_all_chromium() {
-    CONTAINER_COUNT=20
+    # دریافت تعداد کانتینرها از کاربر
+    while true; do
+        read -p "Enter the number of containers to uninstall: " CONTAINER_COUNT
+        if [[ $CONTAINER_COUNT =~ ^[0-9]+$ ]]; then
+            break
+        else
+            echo "Please enter a valid number."
+        fi
+    done
+
     START_PORT=4000
     PORT_INCREMENT=1000
 
@@ -93,7 +100,7 @@ uninstall_all_chromium() {
 
 # Display the menu
 echo "Select an option:"
-echo "1) Install Multiple Chromium Containers with Custom SOCKS5 Proxy"
+echo "1) Install Multiple Chromium Containers"
 echo "2) Uninstall All Chromium Containers"
 echo "3) Exit"
 read -p "Please choose : " choice
