@@ -29,8 +29,16 @@ install_multiple_chromium() {
         fi
     done
 
-    # Starting port
-    START_PORT=4000
+    # دریافت استارت پورت از کاربر
+    while true; do
+        read -p "Enter the starting port: " START_PORT
+        if [[ $START_PORT =~ ^[0-9]+$ ]]; then
+            break
+        else
+            echo "Please enter a valid number for the starting port."
+        fi
+    done
+
     PORT_INCREMENT=1000
 
     for ((i = 0; i < CONTAINER_COUNT; i++)); do
@@ -80,7 +88,16 @@ uninstall_all_chromium() {
         fi
     done
 
-    START_PORT=4000
+    # دریافت استارت پورت از کاربر (برای هماهنگی با نام‌گذاری کانتینرها)
+    while true; do
+        read -p "Enter the starting port of the containers: " START_PORT
+        if [[ $START_PORT =~ ^[0-9]+$ ]]; then
+            break
+        else
+            echo "Please enter a valid number for the starting port."
+        fi
+    done
+
     PORT_INCREMENT=1000
 
     for ((i = 0; i < CONTAINER_COUNT; i++)); do
@@ -103,7 +120,7 @@ echo "Select an option:"
 echo "1) Install Multiple Chromium Containers"
 echo "2) Uninstall All Chromium Containers"
 echo "3) Exit"
-read -p "Please choose : " choice
+read -p "Please choose: " choice
 
 case $choice in
     1) install_multiple_chromium ;;
